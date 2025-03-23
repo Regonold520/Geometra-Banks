@@ -1,0 +1,19 @@
+{
+  "block.geometrabanks.atm": "Geo ATM",
+
+  "item.geometrabanks.green_geocard": "Green Geocard",
+  "item.geometrabanks.red_geocard": "Red Geocard",
+  "item.geometrabanks.blue_geocard": "Blue Geocard",
+  "item.geometrabanks.purple_geocard": "Purple Geocard",
+  "item.geometrabanks.yellow_geocard": "Yellow Geocard",
+  "item.geometrabanks.orange_geocard": "Orange Geocard",
+  "item.geometrabanks.pandaa_geocard": "Stufful Geocard",
+  "item.geometrabanks.cypher_geocard": "Phantump Geocard",
+
+  "item.geometrabanks.sprig_geocard": "Sprigatito Geocard",
+  "item.geometrabanks.pumpkaboo_geocard": "Pumpkaboo Geocard",
+  "item.geometrabanks.bisharp_geocard": "Bisharp Geocard",
+  "item.geometrabanks.cyndaquil_geocard": "H-Cyndaquil Geocard",
+
+  "item.geometrabanks.blank_geocard": "Blank Geocard"
+}

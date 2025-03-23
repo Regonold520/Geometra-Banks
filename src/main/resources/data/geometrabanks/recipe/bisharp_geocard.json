@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "B": {
+      "item": "geometrabanks:blank_geocard"
+    },
+
+    "X": {
+      "item": "minecraft:iron_ingot"
+    }
+  },
+  "pattern": [
+    "CXC",
+    "LBL",
+    "CXC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "geometrabanks:bisharp_geocard"
+  }
+}

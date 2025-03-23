@@ -1,0 +1,10 @@
+{
+  "button_click": {
+    "sounds": [
+      {
+        "name": "geometrabanks:gui/click",
+        "stream": false
+      }
+    ]
+  }
+}

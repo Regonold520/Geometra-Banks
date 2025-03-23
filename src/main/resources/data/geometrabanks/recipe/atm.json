@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "CCC",
+    "CBC",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "geometrabanks:atm"
+  }
+}

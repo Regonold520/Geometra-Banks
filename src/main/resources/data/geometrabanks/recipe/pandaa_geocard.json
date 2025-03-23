@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
+    "B": {
+      "item": "geometrabanks:blank_geocard"
+    },
+
+    "X": {
+      "item": "minecraft:bamboo"
+    }
+  },
+  "pattern": [
+    "CXC",
+    "LBL",
+    "CXC"
+  ],
+  "result": {
+    "count": 1,
+    "id": "geometrabanks:pandaa_geocard"
+  }
+}
