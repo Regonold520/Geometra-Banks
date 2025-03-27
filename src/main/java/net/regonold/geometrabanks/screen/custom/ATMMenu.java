@@ -9,15 +9,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.client.event.sound.SoundEvent;
 import net.regonold.geometrabanks.GeometraBanks;
 import net.regonold.geometrabanks.block.ModBlocks;
 import net.regonold.geometrabanks.block.bank.GeocardSlot;
 import net.regonold.geometrabanks.block.bank.RestrictedSlot;
 import net.regonold.geometrabanks.block.entity.ATMBlockEntity;
-import net.regonold.geometrabanks.item.custom.Geocard;
 import net.regonold.geometrabanks.screen.ModMenuTypes;
 import net.sohpandaa.geometracoins.item.ModItems;
 
@@ -25,10 +24,10 @@ import java.util.Objects;
 
 public class ATMMenu extends AbstractContainerMenu {
     public final ATMBlockEntity blockEntity;
+    public ATMScreen AtScreen;
     private final Level level;
     public Player player;
     public Inventory slotInv;
-    public ServerPlayer depositPlayer;
 
     public int newBalanceRender;
 
@@ -67,14 +66,13 @@ public class ATMMenu extends AbstractContainerMenu {
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 3, 39, 44, ModItems.COIN64.toStack()));
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 4, 39, 67, ModItems.COIN256.toStack()));
 
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 5, -1000, -1000, ModItems.COIN1.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 6, -1000, -1000, ModItems.COIN4.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 7, -1000, -1000, ModItems.COIN16.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 8, -1000, -1000, ModItems.COIN64.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 9, -1000, -1000, ModItems.COIN256.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 5, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 6, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 7, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 8, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 9, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
 
-            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 10, 115, 36));
-            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 11, -1000, -1000));
+            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 10, 172, 72));
         } else if (Objects.equals(blockEntity.bankTab, "withdraw")) {
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 0, -1000, -1000, ModItems.COIN1.toStack()));
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 1, -1000, -1000, ModItems.COIN4.toStack()));
@@ -82,14 +80,27 @@ public class ATMMenu extends AbstractContainerMenu {
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 3, -1000, -1000, ModItems.COIN64.toStack()));
             this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 4, -1000, -1000, ModItems.COIN256.toStack()));
 
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 5, 34, 83, ModItems.COIN1.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 6, 57, 83, ModItems.COIN4.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 7, 80, 83, ModItems.COIN16.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 8, 103, 83, ModItems.COIN64.toStack()));
-            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 9, 126, 83, ModItems.COIN256.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 5, 34, 83, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 6, 57, 83, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 7, 80, 83, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 8, 103, 83, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 9, 126, 83, Items.BEDROCK.getDefaultInstance()));
 
-            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 10, -1000, -1000));
-            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 11, 80, 54));
+            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 10, 172, 72));
+        } else if (Objects.equals(blockEntity.bankTab, "pin")) {
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 0, -1000, -1000, ModItems.COIN1.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 1, -1000, -1000, ModItems.COIN4.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 2, -1000, -1000, ModItems.COIN16.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 3, -1000, -1000, ModItems.COIN64.toStack()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 4, -1000, -1000, ModItems.COIN256.toStack()));
+
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 5, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 6, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 7, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 8, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+            this.addSlot(new RestrictedSlot(this.blockEntity.inventory, 9, -1000, -1000, Items.BEDROCK.getDefaultInstance()));
+
+            this.addSlot(new GeocardSlot(this.blockEntity.inventory, 10, 172, 72));
         }
 
         addPlayerInventory(slotInv);
@@ -98,6 +109,10 @@ public class ATMMenu extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
+        if (Objects.equals(blockEntity.bankTab, "pin")) {
+            return ItemStack.EMPTY;
+        }
+
         Slot sourceSlot = slots.get(pIndex);
         if (sourceSlot == null || !sourceSlot.hasItem())
             return ItemStack.EMPTY;
@@ -161,18 +176,51 @@ public class ATMMenu extends AbstractContainerMenu {
         }
     }
 
-    private static final ResourceLocation OFF_SFX =
-            ResourceLocation.fromNamespaceAndPath(GeometraBanks.MODID, "button_click");
-
-
     @Override
     public void removed(Player player) {
         super.removed(player);
         blockEntity.opened = false;
+        blockEntity.bankTab = "pin";
+
         if (blockEntity instanceof ATMBlockEntity atm) {
             atm.refundWithdrawnCoins();
         }
+
+        if (!player.level().isClientSide()) {
+            ATMBlockEntity atmBlockEntity = this.blockEntity;
+
+            if (atmBlockEntity != null) {
+                // Ensure we safely check for null before using the slot.
+                ItemStack slot10Stack = atmBlockEntity.inventory.getStackInSlot(10);
+                if (slot10Stack != null && !slot10Stack.isEmpty()) {
+                    boolean addedToInventory = player.getInventory().add(slot10Stack);
+                    if (addedToInventory) {
+                        atmBlockEntity.inventory.setStackInSlot(10, ItemStack.EMPTY);
+                    }
+                }
+            }
+        }
     }
 
-
+    @Override
+    public boolean clickMenuButton(Player player, int id) {
+        if (id == 0) {
+            blockEntity.bankTab = "deposit";
+            blockEntity.withdrew = false;
+            updateSlots();
+            broadcastChanges();
+            return true;
+        } else if (id == 1) {
+            blockEntity.bankTab = "withdraw";
+            if (!blockEntity.getLevel().isClientSide()) {
+                if (blockEntity.depositPlayer != null && !blockEntity.withdrew) {
+                    blockEntity.withdrew = true;
+                }
+            }
+            updateSlots();
+            broadcastChanges();
+            return true;
+        }
+        return false;
+    }
 }

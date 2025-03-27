@@ -20,6 +20,9 @@ public class ModDataComponents {
     public static final DeferredHolder<DataComponentType<?>, DataComponentType<UUID>> UUID_COMPONENT = register("uuid",
             builder -> builder.persistent(UUID_CODEC));
 
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> PIN_COMPONENT = register("pin",
+            builder -> builder.persistent(Codec.INT));
+
     private static <T> DeferredHolder<DataComponentType<?>, DataComponentType<T>> register(String name,
                                                                                            UnaryOperator<DataComponentType.Builder<T>> buildOperator) {
         return DATA_COMPONENT_TYPES.register(name, () -> buildOperator.apply(DataComponentType.builder()).build());

@@ -16,12 +16,15 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import net.regonold.geometrabanks.block.ModBlocks;
 import net.regonold.geometrabanks.block.bank.BankManager;
 import net.regonold.geometrabanks.block.bank.SyncBalancePacket;
+import net.regonold.geometrabanks.block.bank.SyncBankTab;
+import net.regonold.geometrabanks.block.bank.SyncPinPacket;
 import net.regonold.geometrabanks.block.entity.ModBlockEntities;
 import net.regonold.geometrabanks.component.ModDataComponents;
 import net.regonold.geometrabanks.item.ModCreativeModeTabs;
 import net.regonold.geometrabanks.item.ModItems;
 import net.regonold.geometrabanks.screen.ModMenuTypes;
 import net.regonold.geometrabanks.screen.custom.ATMScreen;
+import net.regonold.geometrabanks.screen.custom.CardScreen;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -124,12 +127,14 @@ public class GeometraBanks
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
             event.register(ModMenuTypes.ATM_MENU.get(), ATMScreen::new);
+            event.register(ModMenuTypes.CARD_MENU.get(), CardScreen::new);
         }
 
         @SubscribeEvent
-        public static void registerScreens(RegisterPayloadHandlersEvent event) {
+        public static void registerSyncBalance(RegisterPayloadHandlersEvent event) {
             SyncBalancePacket.register(event);
+            SyncBankTab.register(event);
+            SyncPinPacket.register(event);
         }
-
     }
 }

@@ -1,5 +1,6 @@
 package net.regonold.geometrabanks.block.entity;
 
+import net.minecraft.client.gui.screens.inventory.EnchantmentScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -30,86 +31,94 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
     public ServerPlayer depositPlayer;
     public boolean withdrew = false;
 
-    public final ItemStackHandler inventory = new ItemStackHandler(12) {
+    public final ItemStackHandler inventory = new ItemStackHandler(11) {
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
             return 128;
         }
+
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
+
             if (depositPlayer != null) {
                 handleDeposit(slot);
-            }
-            if (!level.isClientSide()){
-                if (slot == 11) {
-                    ItemStack card = getStackInSlot(11);
 
+            }
+
+            if (!level.isClientSide()) {
+                if (slot == 10 && inventory.getStackInSlot(10).isEmpty() && bankTab.equals("withdraw")) {
+                    refundWithdrawnCoins();
+                    bankTab = "pin";
+                }
+
+                if (slot == 10 && !inventory.getStackInSlot(10).isEmpty() && bankTab.equals("withdraw")) {
+                    ItemStack card = getStackInSlot(10);
+                    if (!card.isEmpty() && card.get(ModDataComponents.UUID_COMPONENT) != null) {
+                        Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
+                        depositPlayer = (ServerPlayer) cardPlayer;
+                        handleWithdraw();
+                    }
+                }
+
+                if (slot == 10) {
+                    ItemStack card = getStackInSlot(10);
                     if (!card.isEmpty() && card.get(ModDataComponents.UUID_COMPONENT) != null) {
                         Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
                         if (cardPlayer instanceof ServerPlayer) {
                             depositPlayer = (ServerPlayer) cardPlayer;
                             if (!withdrew) {
-                                handleWithdraw();
                                 withdrew = true;
                             }
                         }
                     } else {
                         if (withdrew) {
-                            refundWithdrawnCoins();
                             withdrew = false;
                         }
                         depositPlayer = null;
                     }
                 }
-
-
-
-                if (slot == 10 && getStackInSlot(10) != ItemStack.EMPTY || slot == 11 && getStackInSlot(11) != ItemStack.EMPTY) {
-                    ItemStack card = getStackInSlot(slot);
-                    if (card.get(ModDataComponents.UUID_COMPONENT) != null) {
-                        Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
-                            depositPlayer = (ServerPlayer) cardPlayer;
-
-                            System.out.println("THING IS " + cardPlayer.getScoreboardName());
-
-                    }
-                }
-
-                if (slot == 10 && getStackInSlot(10) == ItemStack.EMPTY || slot == 11 && getStackInSlot(11) == ItemStack.EMPTY) {
-                        depositPlayer = null;
-                    }
-
             } else {
-                if (slot == 10 && getStackInSlot(10) != ItemStack.EMPTY || slot == 11 && getStackInSlot(11) != ItemStack.EMPTY) {
+                if (slot == 10 && getStackInSlot(10) != ItemStack.EMPTY) {
                     ItemStack card = getStackInSlot(slot);
                     if (card.get(ModDataComponents.UUID_COMPONENT) != null) {
                         Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
-
                         atmMenu.newBalanceRender = cardPlayer.getData(BankManager.BALANCE);
                     }
                 }
-
-                if (slot == 10 && getStackInSlot(10) == ItemStack.EMPTY || slot == 11 && getStackInSlot(11) == ItemStack.EMPTY) {
+                if (slot == 10 && getStackInSlot(10) == ItemStack.EMPTY) {
                     atmMenu.newBalanceRender = 0;
+                    if (!bankTab.equals("pin")) {
+                        bankTab = "pin";
+                        if (atmMenu.AtScreen != null) {
+                            System.out.println("eariossss");
+                            atmMenu.AtScreen.setupButtons();
+                        }
+                        atmMenu.updateSlots();
+                    }
                 }
 
-                if (slot < 10 && getStackInSlot(10) != ItemStack.EMPTY) {
+                if (slot < 10 && getStackInSlot(10) != ItemStack.EMPTY && bankTab.equals("deposit")) {
                     ItemStack card = getStackInSlot(10);
                     if (card.get(ModDataComponents.UUID_COMPONENT) != null) {
                         Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
-
                         atmMenu.newBalanceRender = cardPlayer.getData(BankManager.BALANCE);
                     }
                 }
 
-                if (slot < 10 && getStackInSlot(10) != ItemStack.EMPTY) {
-                    ItemStack card2 = getStackInSlot(11);
-                    if (card2.get(ModDataComponents.UUID_COMPONENT) != null) {
-                        Player cardPlayer = level.getPlayerByUUID(card2.get(ModDataComponents.UUID_COMPONENT));
-
-                        atmMenu.newBalanceRender = cardPlayer.getData(BankManager.BALANCE);
+                if (slot >= 5 && slot <= 9 && bankTab.equals("withdraw")) {
+                    int withdrawTotal = 0;
+                    for (int i = 5; i <= 9; i++) {
+                        ItemStack stack = getStackInSlot(i);
+                        if (!stack.isEmpty()) {
+                            if (stack.is(ModItems.COIN256)) withdrawTotal += stack.getCount() * 256;
+                            if (stack.is(ModItems.COIN64)) withdrawTotal += stack.getCount() * 64;
+                            if (stack.is(ModItems.COIN16)) withdrawTotal += stack.getCount() * 16;
+                            if (stack.is(ModItems.COIN4)) withdrawTotal += stack.getCount() * 4;
+                            if (stack.is(ModItems.COIN1)) withdrawTotal += stack.getCount();
+                        }
                     }
+                    atmMenu.newBalanceRender = withdrawTotal;
                 }
             }
 
@@ -118,12 +127,28 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
     };
 
 
-    public String bankTab = "deposit";
+        public String bankTab = "pin";
     public boolean opened = false;
     private ServerPlayer player;
     public ATMMenu atmMenu;
-    public boolean isWithdrawl = false;
 
+    public void setTab(String newTab) {
+        if (!level.isClientSide) {
+            this.bankTab = newTab;
+
+            ItemStack card = this.inventory.getStackInSlot(10);
+            if (!card.isEmpty() && card.get(ModDataComponents.UUID_COMPONENT) != null) {
+                Player cardPlayer = level.getPlayerByUUID(card.get(ModDataComponents.UUID_COMPONENT));
+                depositPlayer = (ServerPlayer) cardPlayer;
+                if (newTab.equals("withdraw")) {
+
+                    handleWithdraw();
+                } else {
+                    refundWithdrawnCoins();
+                }
+            }
+        }
+    }
 
     public ATMBlockEntity(BlockPos pos, BlockState blockState) {
         super(ModBlockEntities.ATM_BE.get(), pos, blockState);
@@ -175,10 +200,10 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
 
     public void handleWithdraw() {
         if (depositPlayer == null) return;
-
         this.withdrew = true;
 
-        int runningTotal = depositPlayer.getData(BankManager.BALANCE);
+        int originalBalance = depositPlayer.getData(BankManager.BALANCE);
+        int runningTotal = originalBalance;
 
         int coin256Amount = runningTotal / 256;
         inventory.setStackInSlot(9, ModItems.COIN256.toStack(coin256Amount));
@@ -199,7 +224,10 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
         int coin1Amount = runningTotal;
         inventory.setStackInSlot(5, ModItems.COIN1.toStack(coin1Amount));
 
-        addBalance(-depositPlayer.getData(BankManager.BALANCE));
+        int withdrawnTotal = originalBalance - runningTotal;
+        addBalance(-withdrawnTotal);
+
+        atmMenu.newBalanceRender = 0;
     }
 
     public void refundWithdrawnCoins() {
@@ -207,7 +235,6 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
 
         this.withdrew = false;
 
-        System.out.println("EARIO");
         int refundAmount = 0;
 
         for (int slot = 5; slot <= 9; slot++) {
@@ -218,6 +245,7 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
                 if (stack.is(ModItems.COIN16)) refundAmount += stack.getCount() * 16;
                 if (stack.is(ModItems.COIN4)) refundAmount += stack.getCount() * 4;
                 if (stack.is(ModItems.COIN1)) refundAmount += stack.getCount();
+
                 inventory.setStackInSlot(slot, ItemStack.EMPTY);
             }
         }
@@ -225,14 +253,21 @@ public class ATMBlockEntity extends BlockEntity implements MenuProvider {
         if (refundAmount > 0) {
             addBalance(refundAmount);
         }
-    }
 
+        if (atmMenu != null) {
+            atmMenu.newBalanceRender = depositPlayer.getData(BankManager.BALANCE);
+        }
+
+        PacketDistributor.sendToPlayer(depositPlayer,
+                new SyncBalancePacket.MyData(depositPlayer.getData(BankManager.BALANCE), getBlockPos()));
+
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+    }
 
 
     public void addBalance(int money) {
         if (depositPlayer != null) {
             depositPlayer.setData(BankManager.BALANCE, depositPlayer.getData(BankManager.BALANCE) + money);
-            System.out.println(depositPlayer.getData(BankManager.BALANCE) + "DEPOSIT MADE!");
             PacketDistributor.sendToPlayer(depositPlayer,new SyncBalancePacket.MyData(depositPlayer.getData(BankManager.BALANCE), getBlockPos()));
         }
     }

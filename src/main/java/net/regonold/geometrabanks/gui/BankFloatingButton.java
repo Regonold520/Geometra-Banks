@@ -36,12 +36,12 @@ public class BankFloatingButton extends Button {
         guiGraphics.blit(texture, this.getX(), this.getY(), 0, 0, this.width, this.height, this.width, this.height);
 
         Font mcFont = Minecraft.getInstance().font;
-        String text = this.getMessage().getString(); // Get the button text
-        int textWidth = mcFont.width(text); // Get text width
+        String text = this.getMessage().getString();
+        int textWidth = mcFont.width(text);
 
         int x = this.getX() + (this.width - textWidth) / 2;
         int y = this.getY() + (this.height - 8) / 2;
-        int color2 = 0x8d8d8d; // White color
+        int color2 = 0x8d8d8d;
         guiGraphics.drawString(mcFont, text, x, y, color2, false);
     }
 
@@ -49,9 +49,9 @@ public class BankFloatingButton extends Button {
     public void renderString(GuiGraphics guiGraphics, Font font, int color) {
         Font mcFont = Minecraft.getInstance().font;
         String text = this.getMessage().getString();
-        int x = 95; // X position
-        int y = 62; // Y position
-        int color2 = 0x8d8d8d; // White color
+        int x = 95;
+        int y = 62;
+        int color2 = 0x8d8d8d;
         guiGraphics.drawString(mcFont, text + " C", x, y, color2, false);
     }
 
